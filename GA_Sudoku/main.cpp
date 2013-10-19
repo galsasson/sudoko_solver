@@ -63,6 +63,10 @@ int main(int argc, const char * argv[])
 		cout << "FAILED" << endl << endl;
 		return 0;
 	}
+    
+    cout<<"correctness test: "<<getCorrectNum(init_test_correct)<<endl;
+    cout<<"incorrectness test: "<<getCorrectNum(init_test_incorrect)<<endl;
+    
 	cout << "Running team: \'" << kAuthorTeam << "\'" << endl << endl;
 	// Seed random:
 	srand( (unsigned int)time( NULL ) );

@@ -13,23 +13,33 @@
  * THE CONTENTS OF THIS FILE SHOULD BE EDITED TO PRODUCE A WINNING SUDOKU SOLVER...
  */
 
+// get to 20 with
+// mut = 0.02, reduce = 0.5
+
+
 #pragma mark -
 #pragma mark - TEAM_PARAMS
 
 static const std::string	kAuthorTeam		= "Print your kid's face";
-static const float			kMutationRate	= 0.01f;
+static const float			kMutationRate	= 0.02f;
 
 using namespace std;
 #pragma mark -
 #pragma mark - TEAM_FUNCTIONS
 
-static float getRowScore(const int* iBoard, int index);
-static float getColScore(const int* iBoard, int index);
+static float getRowScore(const int* iBoard, int index, int start, int end);
+static float getColScore(const int* iBoard, int index, int start, int end);
 static float getBoxScore(const int* iBoard, int index);
+static int getCorrectNum(const int* iBoard);
 static void printBoard(const int* iBoard, const size_t& iTileCount);
 
 static long long printCounter=0;
-static float avg = 0;
+static float pointsAvg = 0;
+static float correctAvg = 0;
+
+//static float reduceConst = 0.75f;
+static float reduceConst = 0.65f;
+
 
 static float fitnessFunc(const int* iBoard, const size_t& iTileCount)
 {
@@ -38,23 +48,37 @@ static float fitnessFunc(const int* iBoard, const size_t& iTileCount)
     // GAL: max points should be 27
     float points = 1;
     
-	for (int i=0; i<9; i++)
+    for (int i=0; i<9; i++)
     {
-        points += getBoxScore(iBoard, i);
-        points += getRowScore(iBoard, i);
-        points += getColScore(iBoard, i);
+        points *= getBoxScore(iBoard, i);
+        points *= getRowScore(iBoard, i, 0, 9);
+        points *= getColScore(iBoard, i, 0, 9);
+    }
+  
+    int correctNum = getCorrectNum(iBoard);
+    if (correctNum > 25) {
+        cout<<"******** correctNum = "<<correctNum<<endl;
+        cout<<"******** points = "<<points<<endl;
+        printBoard(iBoard, iTileCount);
+    }
+//    points = points*points*points*points;
+    pointsAvg += points/1000;
+    correctAvg += (float)correctNum/1000;
+    
+    
+    if (printCounter%100000 == 0) {
+        cout<<"-------------------------------------------\n";
+        printBoard(iBoard, iTileCount);
+        cout<<"generation["<<printCounter/1000<<"] (points avg="<<pointsAvg<<", correct avg="<<correctAvg<<")"<<endl;
+        cout<<"-------------------------------------------\n";
     }
     
-//    points = points*points*points   ;
-//    cout<<"-------------------------------------------\n";
-//    printBoard(iBoard, iTileCount);
-    avg += points/10000;
-    if (printCounter%10000 == 0) {
-        std::cout<<"points["<<printCounter<<"] (avg="<<avg<<") = "<<points<<std::endl;
-        avg=0;
+    if (printCounter%1000 == 0) {
+        pointsAvg=0;
+        correctAvg=0;
     }
+
     printCounter++;
-//    cout<<"-------------------------------------------\n";
     
     return points;
 }
@@ -105,17 +129,18 @@ static void printBoard(const int* iBoard, const size_t& iTileCount)
 	printf( "\n" );
 }
 
-static float getRowScore(const int* iBoard, int index)
+static float getRowScore(const int* iBoard, int index, int s, int e)
 {
     float points = 1;
     bool checkArr[9] = {false};
     
-    int start = index*9;
+    int start = index*9 + s;
+    int end = start+(e-s);
     
-    for (int i=start; i<start+9; i++)
+    for (int i=start; i<end; i++)
     {
         if (checkArr[iBoard[i]-1] == true) {
-            points -= 0.1f;
+            points *= reduceConst;
         }
         else {
             checkArr[iBoard[i]-1] = true;
@@ -125,17 +150,18 @@ static float getRowScore(const int* iBoard, int index)
     return points;
 }
 
-static float getColScore(const int* iBoard, int index)
+static float getColScore(const int* iBoard, int index, int s, int e)
 {
     float points = 1;
     bool checkArr[9] = {false};
     
-    int start = index;
+    int start = index + s*9;
+    int end = start+(e-s)*9;
     
-    for (int i=start; i<start+81; i+=9)
+    for (int i=start; i<end; i+=9)
     {
         if (checkArr[iBoard[i]-1] == true) {
-            points -= 0.1f;
+            points *= reduceConst;
         }
         else {
             checkArr[iBoard[i]-1] = true;
@@ -150,7 +176,7 @@ static float getBoxScore(const int* iBoard, int index)
     float points = 1;
     bool checkArr[9] = {false};
     
-    int start = index%3 + (index/3)*27;
+    int start = index%3*3 + (index/3)*27;
     
     for (int x=0; x<3; x++)
     {
@@ -158,7 +184,8 @@ static float getBoxScore(const int* iBoard, int index)
         {
             int i = start + x + y*9;
             if (checkArr[iBoard[i]-1] == true) {
-                points -= 0.1f;
+                points *= reduceConst;
+//                cout<<"error in index "<<i<<endl;
             }
             else {
                 checkArr[iBoard[i]-1] = true;
@@ -167,4 +194,24 @@ static float getBoxScore(const int* iBoard, int index)
     }
 
     return points;
+}
+
+static int getCorrectNum(const int* iBoard)
+{
+    int c=0;
+    
+    for (int i=0; i<9; i++)
+    {
+        if (getRowScore(iBoard, i, 0, 9) == 1) {
+            c++;
+        }
+        if (getColScore(iBoard, i, 0, 9) == 1) {
+            c++;
+        }
+        if (getBoxScore(iBoard, i) == 1) {
+            c++;
+        }
+    }
+    
+    return c;
 }
