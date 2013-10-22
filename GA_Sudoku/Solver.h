@@ -118,18 +118,9 @@ static void crossoverFunc(const int* iBoardA, const int* iBoardB, int* oBoard, c
 	// EXERCISE: Please feel free to replace the contents of this function to improve upon your algorithm's performance...
 
     for(int i=0;i<9;i++){
-        if(getBoxScore(iBoardA, i) > getBoxScore(iBoardB, i))
-            switchBox(iBoardA, oBoard, i);
-        else switchBox(iBoardB, oBoard, i);
-        
-//        if(getRowScore(iBoardA, i) > getRowScore(iBoardB, i))
-//            switchRow(iBoardA, oBoard, i);
-//        else switchRow(iBoardB, oBoard, i);
-//        
-//        if(getColScore(iBoardA, i) > getColScore(iBoardB, i))
-//            switchCol(iBoardA, oBoard, i);
-//        else switchCol(iBoardB, oBoard, i);
-        
+        if(getRowScore(iBoardA, i) > getRowScore(iBoardB, i))
+            switchRow(iBoardA, oBoard, i);
+        else switchRow(iBoardB, oBoard, i);
     }
 }
 
@@ -198,13 +189,7 @@ static float getRowScore(const int* iBoard, int index)
 
 static void switchRow(const int* iBoard,  int* oBoard, int index)
 {
-    int start = index*9;
-    
-    for (int i=start; i<start+9; i++)
-    {
-        oBoard[start] = iBoard[start];
-    }
-    
+    memcpy(oBoard+index*9, iBoard+index*9, 9*sizeof(int));
 }
 
 
@@ -466,9 +451,7 @@ static void mutateRow2(int* ioBoard, int index)
     while (i<end) {
         bool *pSlot = checkArr + (*i);
         if ((*pSlot)) {
-            if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
-                *i = randomInt(getTileValueMin(), getTileValueMax()+1);
-            }
+            *i = randomInt(getTileValueMin(), getTileValueMax()+1);
         }
         else {
             *pSlot = true;
@@ -487,9 +470,7 @@ static void mutateCol2(int* ioBoard, int index)
     while (i<end) {
         bool *pSlot = checkArr + *i;
         if ((*pSlot)) {
-            if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
-                *i = randomInt(getTileValueMin(), getTileValueMax()+1);
-            }
+            *i = randomInt(getTileValueMin(), getTileValueMax()+1);
         }
         else {
             *pSlot = true;
@@ -510,9 +491,7 @@ static void mutateBox2(int* ioBoard, int index)
         {
             int i = start + x + y*9;
             if (checkArr[ioBoard[i]] == true) {
-                if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
-                    ioBoard[i] = randomInt(getTileValueMin(), getTileValueMax()+1);
-                }
+                ioBoard[i] = randomInt(getTileValueMin(), getTileValueMax()+1);
             }
             else {
                 checkArr[ioBoard[i]] = true;
