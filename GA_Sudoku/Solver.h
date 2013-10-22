@@ -106,9 +106,8 @@ static void crossoverFunc(const int* iBoardA, const int* iBoardB, int* oBoard, c
 static void mutateFunc(int* ioBoard, const size_t& iTileCount, const float& iMutationRate)
 {
 	// EXERCISE: Please feel free to replace the contents of this function to improve upon your algorithm's performance...
-    if (generation % 30 == 0) {
+    if (generation % 25 == 0) {
         randomBoard(ioBoard, iTileCount);
-        return;
     }
     else {
         for(int i=0;i<9;i++)
