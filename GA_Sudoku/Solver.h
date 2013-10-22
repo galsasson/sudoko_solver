@@ -116,19 +116,19 @@ static float fitnessFunc(const int* iBoard, const size_t& iTileCount)
 static void crossoverFunc(const int* iBoardA, const int* iBoardB, int* oBoard, const size_t& iTileCount)
 {
 	// EXERCISE: Please feel free to replace the contents of this function to improve upon your algorithm's performance...
-    
+
     for(int i=0;i<9;i++){
         if(getBoxScore(iBoardA, i) > getBoxScore(iBoardB, i))
             switchBox(iBoardA, oBoard, i);
         else switchBox(iBoardB, oBoard, i);
         
-        if(getRowScore(iBoardA, i) > getRowScore(iBoardB, i))
-            switchRow(iBoardA, oBoard, i);
-        else switchRow(iBoardB, oBoard, i);
-        
-        if(getColScore(iBoardA, i) > getColScore(iBoardB, i))
-            switchCol(iBoardA, oBoard, i);
-        else switchCol(iBoardB, oBoard, i);
+//        if(getRowScore(iBoardA, i) > getRowScore(iBoardB, i))
+//            switchRow(iBoardA, oBoard, i);
+//        else switchRow(iBoardB, oBoard, i);
+//        
+//        if(getColScore(iBoardA, i) > getColScore(iBoardB, i))
+//            switchCol(iBoardA, oBoard, i);
+//        else switchCol(iBoardB, oBoard, i);
         
     }
 }
@@ -202,7 +202,7 @@ static void switchRow(const int* iBoard,  int* oBoard, int index)
     
     for (int i=start; i<start+9; i++)
     {
-        oBoard[start] = iBoard[start];        
+        oBoard[start] = iBoard[start];
     }
     
 }
