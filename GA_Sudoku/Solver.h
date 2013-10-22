@@ -107,7 +107,8 @@ static void mutateFunc(int* ioBoard, const size_t& iTileCount, const float& iMut
 {
 	// EXERCISE: Please feel free to replace the contents of this function to improve upon your algorithm's performance...
     if (generation % 30 == 0) {
-            randomBoard(ioBoard, iTileCount);
+        randomBoard(ioBoard, iTileCount);
+        return;
     }
     else {
         for(int i=0;i<9;i++)
@@ -143,7 +144,7 @@ static void printBoard(const int* iBoard, const size_t& iTileCount)
 	printf( "\n" );
 }
 
-static float getRowScore(const int* iBoard, int index)
+static inline float getRowScore(const int* iBoard, int index)
 {
     float points = 1;
     bool checkArr[10] = {false};
@@ -174,7 +175,7 @@ static inline void switchRow(const int* iBoard,  int* oBoard, int index)
 
 
 
-static float getColScore(const int* iBoard, int index)
+static inline float getColScore(const int* iBoard, int index)
 {
     float points = 1;
     bool checkArr[10] = {false};
@@ -211,7 +212,7 @@ static void switchCol(const int* iBoard,  int* oBoard, int index)
     
 }
 
-static float getBoxScore(const int* iBoard, int index)
+static inline float getBoxScore(const int* iBoard, int index)
 {
     float points = 1;
     bool checkArr[10] = {false};
@@ -275,7 +276,7 @@ static int getCorrectNum(const int* iBoard)
     return c;
 }
 
-static void mutateRow2(int* ioBoard, int index)
+static inline void mutateRow2(int* ioBoard, int index)
 {
     bool checkArr[10] = {false};
     
@@ -294,7 +295,7 @@ static void mutateRow2(int* ioBoard, int index)
     }
 }
 
-static void mutateCol2(int* ioBoard, int index)
+static inline void mutateCol2(int* ioBoard, int index)
 {
     bool checkArr[10] = {false};
     
@@ -313,7 +314,7 @@ static void mutateCol2(int* ioBoard, int index)
     }
 }
 
-static void mutateBox2(int* ioBoard, int index)
+static inline void mutateBox2(int* ioBoard, int index)
 {
     bool checkArr[10] = {false};
     
