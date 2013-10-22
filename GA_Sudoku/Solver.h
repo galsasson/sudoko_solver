@@ -133,7 +133,7 @@ static void crossoverFunc(const int* iBoardA, const int* iBoardB, int* oBoard, c
     }
 }
 
-static void mutateFunc(int* ioBoard, const size_t& iTileCount, const float& iMutationRate, int gen)
+static void mutateFunc(int* ioBoard, const size_t& iTileCount, const float& iMutationRate)
 {
 	// EXERCISE: Please feel free to replace the contents of this function to improve upon your algorithm's performance...
     if (generation % 30 == 0) {
@@ -198,14 +198,11 @@ static float getRowScore(const int* iBoard, int index)
 
 static void switchRow(const int* iBoard,  int* oBoard, int index)
 {
-    
     int start = index*9;
     
     for (int i=start; i<start+9; i++)
     {
-        
-        oBoard[start] = iBoard[start];
-        
+        oBoard[start] = iBoard[start];        
     }
     
 }
