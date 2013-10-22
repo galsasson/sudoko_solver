@@ -42,7 +42,8 @@ static long long callCounter=0;
 static float pointsAvg = 0;
 static float correctAvg = 0;
 
-static float reduceConst = 0.75f;
+//static float reduceConst = 0.75f;
+static float reduceConst = 0.9f;
 static int generation = 0;
 
 
@@ -109,7 +110,7 @@ static void mutateFunc(int* ioBoard, const size_t& iTileCount, const float& iMut
     if (generation % 25 == 0) {
         randomBoard(ioBoard, iTileCount);
     }
-    else {
+    else {        
         for(int i=0;i<9;i++)
         {
             if(getBoxScore(ioBoard, i) < 1.0f) mutateBox2(ioBoard, i);
