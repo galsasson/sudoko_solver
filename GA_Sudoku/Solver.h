@@ -236,21 +236,38 @@ static float getBoxScore(const int* iBoard, int index)
     float points = 1;
     bool checkArr[10] = {false};
     
-    int start = ((index)%3)*3 + 27*((index)/3);
+    int* i = (int*)iBoard + ((index)%3)*3 + index/3*27;
+    int* bottom = i + 27;
     
-    for (int x=0; x<3; x++)
+    while (i<bottom)
     {
-        for (int y=0; y<3; y++)
-        {
-            int i = start + x + y*9;
-            if (checkArr[iBoard[i]] == true) {
+        int* right = i+3;
+        while (i<right) {
+            bool *pSlot = checkArr + *i;
+            if (*pSlot) {
                 points *= reduceConst;
             }
             else {
-                checkArr[iBoard[i]] = true;
+                *pSlot = true;
             }
+            i++;
         }
+        i+=6;
     }
+//    int start = ((index)%3)*3 + index/3*27;
+//    for (int x=0; x<3; x++)
+//    {
+//        for (int y=0; y<3; y++)
+//        {
+//            int i = start + x + y*9;
+//            if (checkArr[iBoard[i]] == true) {
+//                points *= reduceConst;
+//            }
+//            else {
+//                checkArr[iBoard[i]] = true;
+//            }
+//        }
+//    }
     
     return points;
 }
