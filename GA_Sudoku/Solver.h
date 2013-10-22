@@ -23,7 +23,12 @@ using namespace std;
 #pragma mark -
 #pragma mark - TEAM_FUNCTIONS
 
-//#define DEBDEBUG 1
+#define DEBDEBUG 1
+
+
+//TEAM SCORE: 'Print your kid's face'
+//Average Duration: 6787.58 milliseconds
+//Average Generation Count: 315.64
 
 static float getRowScore(const int* iBoard, int index);
 static float getColScore(const int* iBoard, int index);
@@ -37,6 +42,9 @@ static void randomBoard(int* ioBoard, const size_t& iTileCount);
 static void mutateCol(int* iBoard, int index);
 static void mutateRow(int* iBoard, int index);
 static void mutateBox(int* iBoard, int index);
+static void mutateCol2(int* iBoard, int index);
+static void mutateRow2(int* iBoard, int index);
+static void mutateBox2(int* iBoard, int index);
 static void shuffleCol(int* iBoard, int index);
 static void shuffleRow(int* iBoard, int index);
 static void shuffleBox(int* iBoard, int index);
@@ -99,34 +107,7 @@ static void crossoverFunc(const int* iBoardA, const int* iBoardB, int* oBoard, c
 {
 	// EXERCISE: Please feel free to replace the contents of this function to improve upon your algorithm's performance...
     
-    float pointsA = 0;
-    float pointsB = 0;;
-    
-//    for (int i=0; i<9; i++)
-//    {
-//        pointsA += getBoxScore(iBoardA, i);
-//        pointsA += getRowScore(iBoardA, i);
-//        pointsA += getColScore(iBoardA, i);
-//        pointsB += getBoxScore(iBoardB, i);
-//        pointsB += getRowScore(iBoardB, i);
-//        pointsB += getColScore(iBoardB, i);
-//    }
-//    
-//    
-//    if(pointsA== pointsB){
-//        cout<<"*******here!!! ("<<pointsA<<" == "<<pointsB<<")\n";
-//        int tMid = randomInt( 0, (int)iTileCount );
-//        //int tMid = (int)iTileCount/2;
-//        for(size_t i = 0; i < iTileCount; i++) {
-//            if(i < tMid) { oBoard[i] = iBoardA[i]; }
-//            else         { oBoard[i] = iBoardB[i]; }
-//        }
-//
-//    }else{
-//    
     for(int i=0;i<9;i++){
-        
-        
         if(getBoxScore(iBoardA, i) > getBoxScore(iBoardB, i))
             switchBox(iBoardA, oBoard, i);
         else switchBox(iBoardB, oBoard, i);
@@ -140,23 +121,20 @@ static void crossoverFunc(const int* iBoardA, const int* iBoardB, int* oBoard, c
         else switchCol(iBoardB, oBoard, i);
         
     }
-    
-//    }
-	
 }
 
 static void mutateFunc(int* ioBoard, const size_t& iTileCount, const float& iMutationRate)
 {
 	// EXERCISE: Please feel free to replace the contents of this function to improve upon your algorithm's performance...
-    if (generation % 200 == 0) {
-        randomBoard(ioBoard, iTileCount);
+    if (generation % 150 == 0) {
+            randomBoard(ioBoard, iTileCount);
     }
     else {
         for(int i=0;i<9;i++)
         {
-            if(getBoxScore(ioBoard, i) < 1.f) mutateBox(ioBoard, i);
-            if(getRowScore(ioBoard, i) < 1.f) mutateRow(ioBoard, i);
-            if(getColScore(ioBoard, i) < 1.f) mutateCol(ioBoard, i);
+            if(getBoxScore(ioBoard, i) < 1.0f) mutateBox(ioBoard, i);
+            if(getRowScore(ioBoard, i) < 1.0f) mutateRow(ioBoard, i);
+            if(getColScore(ioBoard, i) < 1.0f) mutateCol(ioBoard, i);
         }
     }
 }
@@ -476,5 +454,43 @@ static int getCorrectNum(const int* iBoard)
     
     return c;
 }
+
+static void mutateRow2(int* ioBoard, int index)
+{
+    int start = index*9;
+    for (int i=start; i<start+9; i++)
+    {
+        if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
+            ioBoard[i] = randomInt(getTileValueMin(), getTileValueMax()+1);
+        }
+    }
+}
+
+static void mutateCol2(int* ioBoard, int index)
+{
+    int start = index;
+    for (int i=start; i<start+81; i+=9)
+    {
+        if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
+            ioBoard[i] = randomInt(getTileValueMin(), getTileValueMax()+1);
+        }
+    }
+}
+
+static void mutateBox2(int* ioBoard, int index)
+{
+    int start = ((index)%3)*3 + 27*((index)/3);
+    for (int x=0; x<3; x++)
+    {
+        for (int y=0; y<3; y++)
+        {
+            int i = start + x + y*9;
+            if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
+                ioBoard[i] = randomInt(getTileValueMin(), getTileValueMax()+1);
+            }
+        }
+    }
+}
+
 
 
