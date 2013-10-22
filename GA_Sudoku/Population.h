@@ -178,6 +178,7 @@ public:
 				mWinState = new DataType[ mGeneCount ];
 				std::copy( mPopulation[ tBestIdx ], mPopulation[ tBestIdx ] + mGeneCount, mWinState );
 				// Set stop flag:
+//                std::cout<<"we have a winner after "<<mGenerationIter<<" gen ("<<mGenerationIter%70<<")\n";
 				mRunning = false;
 			}
 			// Handle mating:

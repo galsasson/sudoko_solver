@@ -17,7 +17,8 @@
 #pragma mark - TEAM_PARAMS
 
 static const std::string	kAuthorTeam		= "Print your kid's face";
-static const float			kMutationRate	= 0.12f;
+//static const float			kMutationRate	= 0.12f;
+static const float			kMutationRate	= 1;
 
 using namespace std;
 #pragma mark -
@@ -29,6 +30,15 @@ using namespace std;
 //TEAM SCORE: 'Print your kid's face'
 //Average Duration: 6787.58 milliseconds
 //Average Generation Count: 315.64
+
+
+//TEAM SCORE: 'Print your kid's face'
+//Average Duration: 7304.88 milliseconds
+//Average Generation Count: 297.5
+
+//TEAM SCORE: 'Print your kid's face'
+//Average Duration: 1980.42 milliseconds
+//Average Generation Count: 97.78
 
 static float getRowScore(const int* iBoard, int index);
 static float getColScore(const int* iBoard, int index);
@@ -61,7 +71,7 @@ static float fitnessFunc(const int* iBoard, const size_t& iTileCount)
 {
 	// EXERCISE: Please implement a function that evaluates the fitness of a given sudoku board...
     
-    // GAL: max points should be 27
+    // GAL: max points should be 1
     float points = 1;
     
     for (int i=0; i<9; i++)
@@ -123,18 +133,18 @@ static void crossoverFunc(const int* iBoardA, const int* iBoardB, int* oBoard, c
     }
 }
 
-static void mutateFunc(int* ioBoard, const size_t& iTileCount, const float& iMutationRate)
+static void mutateFunc(int* ioBoard, const size_t& iTileCount, const float& iMutationRate, int gen)
 {
 	// EXERCISE: Please feel free to replace the contents of this function to improve upon your algorithm's performance...
-    if (generation % 150 == 0) {
+    if (generation % 30 == 0) {
             randomBoard(ioBoard, iTileCount);
     }
     else {
         for(int i=0;i<9;i++)
         {
-            if(getBoxScore(ioBoard, i) < 1.0f) mutateBox(ioBoard, i);
-            if(getRowScore(ioBoard, i) < 1.0f) mutateRow(ioBoard, i);
-            if(getColScore(ioBoard, i) < 1.0f) mutateCol(ioBoard, i);
+            if(getBoxScore(ioBoard, i) < 1.0f) mutateBox2(ioBoard, i);
+            if(getRowScore(ioBoard, i) < 1.0f) mutateRow2(ioBoard, i);
+            if(getColScore(ioBoard, i) < 1.0f) mutateCol2(ioBoard, i);
         }
     }
 }
@@ -166,23 +176,22 @@ static void printBoard(const int* iBoard, const size_t& iTileCount)
 static float getRowScore(const int* iBoard, int index)
 {
     float points = 1;
-    bool checkArr[9] = {false};
+    bool checkArr[10] = {false};
     
-    int start = index*9;
+    int *i = (int*)iBoard+index*9;
+    int *end = i+9;
     
-    for (int i=start; i<start+9; i++)
-    {
-        if (checkArr[iBoard[i]-1] == true) {
+    while (i<end) {
+        bool *pSlot = checkArr + (*i);
+        if (*pSlot) {
             points *= reduceConst;
         }
         else {
-            checkArr[iBoard[i]-1] = true;
+            *pSlot = true;
         }
+        i++;
     }
     
-   // if(points<low) points*=points;
-   // if(points>high) points+=reward;
-
     return points;
 }
 
@@ -203,27 +212,25 @@ static void switchRow(const int* iBoard,  int* oBoard, int index)
 
 
 
-
 static float getColScore(const int* iBoard, int index)
 {
     float points = 1;
-    bool checkArr[9] = {false};
+    bool checkArr[10] = {false};
     
-    int start = index;
-    
-    for (int i=start; i<start+81; i+=9)
-    {
-        if (checkArr[iBoard[i]-1] == true) {
+    int *i = (int*)iBoard + index;
+    int *end = (int*)iBoard+81;
+
+    while (i<end) {
+        bool *pSlot = checkArr + *i;
+        if (*pSlot) {
             points *= reduceConst;
         }
         else {
-            checkArr[iBoard[i]-1] = true;
+            *pSlot = true;
         }
+        i+=9;
     }
     
-   // if(points<low) points*=points;
-   // if(points>high) points+=reward;
-
     return points;
 }
 
@@ -245,7 +252,7 @@ static void switchCol(const int* iBoard,  int* oBoard, int index)
 static float getBoxScore(const int* iBoard, int index)
 {
     float points = 1;
-    bool checkArr[9] = {false};
+    bool checkArr[10] = {false};
     
     int start = ((index)%3)*3 + 27*((index)/3);
     
@@ -254,18 +261,15 @@ static float getBoxScore(const int* iBoard, int index)
         for (int y=0; y<3; y++)
         {
             int i = start + x + y*9;
-            if (checkArr[iBoard[i]-1] == true) {
+            if (checkArr[iBoard[i]] == true) {
                 points *= reduceConst;
             }
             else {
-                checkArr[iBoard[i]-1] = true;
+                checkArr[iBoard[i]] = true;
             }
         }
     }
     
-   // if(points<low) points*=points;
-   // if(points>high) points+=reward;
-
     return points;
 }
 
@@ -370,8 +374,8 @@ static void shuffleRow( int* iBoard, int index ){
     
 }
 
-static void mutateRow(int* iBoard, int index){
-    
+static void mutateRow(int* iBoard, int index)
+{
     int* tmp = iBoard;
     int start = index*9;
 
@@ -457,36 +461,64 @@ static int getCorrectNum(const int* iBoard)
 
 static void mutateRow2(int* ioBoard, int index)
 {
-    int start = index*9;
-    for (int i=start; i<start+9; i++)
-    {
-        if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
-            ioBoard[i] = randomInt(getTileValueMin(), getTileValueMax()+1);
+    bool checkArr[10] = {false};
+    
+    int *i = (int*)ioBoard+index*9;
+    int *end = i+9;
+    
+    while (i<end) {
+        bool *pSlot = checkArr + (*i);
+        if ((*pSlot)) {
+            if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
+                *i = randomInt(getTileValueMin(), getTileValueMax()+1);
+            }
         }
+        else {
+            *pSlot = true;
+        }
+        i++;
     }
 }
 
 static void mutateCol2(int* ioBoard, int index)
 {
-    int start = index;
-    for (int i=start; i<start+81; i+=9)
-    {
-        if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
-            ioBoard[i] = randomInt(getTileValueMin(), getTileValueMax()+1);
+    bool checkArr[10] = {false};
+    
+    int *i = (int*)ioBoard + index;
+    int *end = (int*)ioBoard+81;
+    
+    while (i<end) {
+        bool *pSlot = checkArr + *i;
+        if ((*pSlot)) {
+            if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
+                *i = randomInt(getTileValueMin(), getTileValueMax()+1);
+            }
         }
+        else {
+            *pSlot = true;
+        }
+        i+=9;
     }
 }
 
 static void mutateBox2(int* ioBoard, int index)
 {
+    bool checkArr[10] = {false};
+    
     int start = ((index)%3)*3 + 27*((index)/3);
+    
     for (int x=0; x<3; x++)
     {
         for (int y=0; y<3; y++)
         {
             int i = start + x + y*9;
-            if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
-                ioBoard[i] = randomInt(getTileValueMin(), getTileValueMax()+1);
+            if (checkArr[ioBoard[i]] == true) {
+                if( ( (float)rand() / (float)RAND_MAX ) < kMutationRate ) {
+                    ioBoard[i] = randomInt(getTileValueMin(), getTileValueMax()+1);
+                }
+            }
+            else {
+                checkArr[ioBoard[i]] = true;
             }
         }
     }
